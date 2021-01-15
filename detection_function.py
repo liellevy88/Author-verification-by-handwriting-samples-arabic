@@ -4,15 +4,20 @@ import numpy as np
 from scipy.signal import argrelextrema, savgol_filter
 import cv2
 from PIL import Image
+import os
+import glob
+
 
 def detect_lines(original):
-	_ , thresh = cv2.threshold(original, 127, 255, cv2.THRESH_BINARY_INV)
+	_, thresh = cv2.threshold(original, 127, 255, cv2.THRESH_BINARY_INV)
 	hight, width = thresh.shape[:2]
 
 	# creates a vector that containing the sum of pixels per line
 	img_row_sum = np.sum(thresh, axis=1)
 
 	# smoothing the data by Savitzky–Golay filter
+	# print(np.shape(img_row_sum))
+
 	w = savgol_filter(img_row_sum, 19, 1)
 
 	# find maximum points
@@ -86,6 +91,7 @@ def detect_lines(original):
 			
 	return lines
 
+
 def findMedian(points):
 	differences = list()
 	if len(points) <= 1:
@@ -94,6 +100,7 @@ def findMedian(points):
 		if i > 0:
 			differences.append(points[i] - points[i - 1])
 	return median(differences)
+
 
 def union_left_ctr(cur_ctr, next_ctr,canvas):
 	"""
@@ -119,6 +126,7 @@ def union_left_ctr(cur_ctr, next_ctr,canvas):
 			return 0
 	else:
 			return 1
+
 
 def find_letters(line_image):
 	"""
@@ -188,8 +196,8 @@ def find_letters(line_image):
 				roiriginal = line_image[y:y + h, x:x + w]
 
 			letter = np.pad(roiriginal, pad_width=10, mode='constant', constant_values=255)
-			cv2.imshow("res", letter)
-			cv2.waitKey(0)
+			# cv2.imshow("res", letter)
+			# cv2.waitKey(0)
 			letters_images.append(letter)
 		i += 1
 	return letters_images
@@ -205,8 +213,16 @@ def get_letters(lines):
 
 
 if __name__ == "__main__":
-	img = cv2.imread("final_solution/page_15-a.jpeg", 0)
-	lines = detect_lines(img)
-	for i in range(len(lines)):
-		img = Image.fromarray(lines[i])
-		img.save('lines/line_' + str(i) + '.jpeg')
+	print("detection")
+	entries = os.listdir('final_solution/')
+	print(entries)
+	t = 0
+	for entry in entries:
+		img = cv2.imread("final_solution/" + str(entry), 0)
+		lines = detect_lines(img)
+		for i in range(len(lines)):
+			letter = find_letters(lines[i])
+			for k in range(len(letter)):
+				let = Image.fromarray(letter[k])
+				let.save('letter/letter_' + str(t) + '.jpeg')
+				t += 1
