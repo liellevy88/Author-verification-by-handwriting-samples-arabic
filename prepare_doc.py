@@ -1,5 +1,6 @@
 from PIL import Image
 import os
+from detection_function import start_func
 
 
 def cut_width(page, page_num):
@@ -32,14 +33,10 @@ def get_concat_vertical(im1, im2):
 
 
 if __name__ == "__main__":
-    dirName = 'concat files'
+    dirName = 'connected files'
     files = os.listdir('files/')
-    a_or_b = 'a'
-    num_page = 1
+    file_number = 1
     for file in files:
-        if num_page == 17:
-            num_page += 1
-            continue
         img = Image.open('files/' + str(file))
         file = os.path.splitext(file)[0] + ".jpeg"
         array_images = []
@@ -55,10 +52,11 @@ if __name__ == "__main__":
         # Create target Directory if don't exist
         if not os.path.exists(dirName):
             os.mkdir(dirName)
-        concat = get_concat_vertical(page1, page2)
-        concat.save(dirName + '/page_' + str(num_page) + '-' + str(a_or_b) + '.jpeg')
-        if a_or_b == 'a':
-            a_or_b = 'b'
+        if file_number == 1:
+            concat_1 = get_concat_vertical(page1, page2)
+            file_number = 2
         else:
-            a_or_b = 'a'
-            num_page += 1
+            concat_2 = get_concat_vertical(page1, page2)
+
+    start_func(concat_1, concat_2)
+
