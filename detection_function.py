@@ -4,7 +4,6 @@ from scipy.signal import argrelextrema, savgol_filter
 import cv2
 from PIL import Image
 import os
-import glob
 from monkey_algorithm import neural_network_returned_vec
 
 
@@ -14,9 +13,6 @@ def detect_lines(original):
 
     # creates a vector that containing the sum of pixels per line
     img_row_sum = np.sum(thresh, axis=1)
-
-    # smoothing the data by Savitzky–Golay filter
-    # print(np.shape(img_row_sum))
 
     w = savgol_filter(img_row_sum, 19, 1)
 
@@ -84,8 +80,6 @@ def detect_lines(original):
 
         roi = original[lines_upper[v]:lines_lower[v + 1], 0:width]
         if roi.shape[0] > 0:
-            # cv2.imshow("example", roi)
-            # cv2.waitKey(0)
             lines.append(roi)
 
     return lines
@@ -197,21 +191,9 @@ def find_letters(line_image):
                 roiriginal = line_image[y:y + h, x:x + w]
 
             letter = np.pad(roiriginal, pad_width=10, mode='constant', constant_values=255)
-            # cv2.imshow("res", letter)
-            # cv2.waitKey(0)
-            # print("shape: " + str(letter.shape))
             letters_images.append(letter)
         i += 1
     return letters_images
-
-
-# def get_letters(lines):
-#     letters = []
-#     for line in lines:
-#         letters.append(find_letters(line))
-#
-#     letters = [y for x in letters for y in x]
-#     return letters
 
 
 def start_func(file_1, file_2):
@@ -220,6 +202,11 @@ def start_func(file_1, file_2):
         directory_file = 'lettersFile' + str(j+1)
         if not os.path.exists(directory_file):
             os.mkdir(directory_file)
+        else:
+            if len(os.listdir(directory_file)) != 0:
+                dir = directory_file
+                for f in os.listdir(dir):
+                    os.remove(os.path.join(dir, f))
         num_of_letter = 0
         if j == 0:
             lines = detect_lines(file_1)
