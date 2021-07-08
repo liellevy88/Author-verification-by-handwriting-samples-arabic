@@ -8,7 +8,7 @@ import torch.nn as nn
 from sklearn.linear_model import LogisticRegression
 from tqdm import tqdm
 from resizeimage import resizeimage
-from PIL import Image, ImageOps
+from PIL import Image
 
 
 def sort(path):
