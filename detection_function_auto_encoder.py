@@ -219,3 +219,5 @@ def start_func_auto(file_1, file_2):
                 let.save(directory_file + '/letter_' + str(num_of_letter) + '.jpeg')
                 num_of_letter += 1
         names_of_directories_file.append(directory_file)
+
+        
